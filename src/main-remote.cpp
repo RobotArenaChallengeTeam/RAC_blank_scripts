@@ -85,6 +85,7 @@ void setup() {
     Serial.println("Error initializing ESP-NOW");
     return;
   }
+  esp_now_register_send_cb(OnDataSent);
   memcpy(peerInfo.peer_addr, robotAddress, 6);
   peerInfo.channel = ESPNOW_RAC_CHANNEL;
   peerInfo.ifidx = WIFI_IF_STA;
