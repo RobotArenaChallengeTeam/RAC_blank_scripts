@@ -6,23 +6,12 @@
 #include <batteryMonitor.h>
 #include <ledUtility.h>
 #include "esp_log.h"
-#include "mac.h"
+#include "common.h"
 
 static const char *TAG = "MAIN";
 //------------ turn on generic serial printing
 
 //#define DEBUG_PRINTS
-//data that will be sent to the receiver
-
-typedef struct {
-  int16_t speedmotorLeft;
-  int16_t speedmotorRight;
-  int16_t packetArg1;
-  int16_t packetArg2;
-  int16_t packetArg3;
-}
-packet_t;
-
 
 packet_t sentData;
 packet_t recData;
@@ -52,19 +41,14 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 
 
 //---------------------------------------HARDWARE DEPENDANT Variables
-// one ifdef case per hardware to speed up modularity of the code
-
 //RAC standard remote
-const int steerPot = 7;
-const int accPot = 10;
-const int leverPot = 8;
-//const int trimPot = 39;
+const int stickXPotPin = 7;
+const int stickYPotPin = 10;
+const int leverPotPin = 8;
 
-const int rightBtn = 2;
-const int leftBtn = 4;
-const int topBtn = 5;
-//const int lowSwitch = 32;
-//const int topSwitch = 25;
+const int rightBtnPin = 2;
+const int leftBtnPin = 4;
+const int topBtnPin = 5;
 LedUtility Led(21);
 
 //customisable vars
@@ -75,18 +59,15 @@ int analogReadMax = (1 << analogRes)-1;
 //variables for the sketch
 int leverValue = 0;
 
-unsigned long current_time = 0;
+unsigned long currentTime = 0;
 
 
 void setup() {
-  //store_values(); // uncomment only to initialize mem
   analogReadResolution(analogRes);
   analogSetAttenuation(ADC_11db);
-  pinMode(rightBtn, INPUT_PULLUP);
-  pinMode(leftBtn, INPUT_PULLUP);
-  pinMode(topBtn, INPUT_PULLUP);
-  //pinMode(lowSwitch, INPUT_PULLUP);
-  //pinMode(topSwitch, INPUT_PULLUP);
+  pinMode(rightBtnPin, INPUT_PULLUP);
+  pinMode(leftBtnPin, INPUT_PULLUP);
+  pinMode(topBtnPin, INPUT_PULLUP);
   Led.init();
   Led.setBlinks(1,150);
   delay(2000);
@@ -97,26 +78,21 @@ void setup() {
 
 
   //---------------------------------------ESP NOW setup
+  WiFi.enableLongRange(true);
   WiFi.mode(WIFI_STA);
+  esp_wifi_set_channel(ESPNOW_RAC_CHANNEL,WIFI_SECOND_CHAN_NONE);
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
     return;
   }
-  esp_now_register_send_cb(OnDataSent);
   memcpy(peerInfo.peer_addr, robotAddress, 6);
-  peerInfo.channel = 0;
+  peerInfo.channel = ESPNOW_RAC_CHANNEL;
+  peerInfo.ifidx = WIFI_IF_STA;
   peerInfo.encrypt = false;
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add peer");
     return;
   }
-  char macStr[18];
-  Serial.print("Packet from: ");
-  // Copies the sender mac address to a string
-  snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
-           peerInfo.peer_addr[0], peerInfo.peer_addr[1], peerInfo.peer_addr[2], peerInfo.peer_addr[3], peerInfo.peer_addr[4], peerInfo.peer_addr[5]);
-  Serial.print("sending to: ");
-  Serial.println(macStr);
   esp_now_register_recv_cb(OnDataRecv);
   Led.setBlinks(0);
   Led.ledOn();
@@ -126,16 +102,16 @@ void setup() {
 
 void loop() {
   //read pots values
-  int strValue = analogRead(steerPot);
+  int stickXValue = analogRead(stickXPotPin);
   delay(3);
-  int accValue = analogRead(accPot);
+  int stickYValue = analogRead(stickYPotPin);
   delay(3);
-  int leverValue = analogRead(leverPot);
+  int leverValue = analogRead(leverPotPin);
   delay(3);
-  current_time = millis(); 
-  bool rightValue = !digitalRead(rightBtn);
-  bool leftValue = !digitalRead(leftBtn);
-  bool topValue = !digitalRead(topBtn);
+  currentTime = millis(); 
+  bool rightBtnValue = !digitalRead(rightBtnPin);
+  bool leftBtnValue = !digitalRead(leftBtnPin);
+  bool topBtnValue = !digitalRead(topBtnPin);
   
   // vvvv ----- YOUR AWESOME CODE HERE ----- vvvv //
 
@@ -145,9 +121,9 @@ void loop() {
   esp_err_t result = -1;
   result = esp_now_send(robotAddress, (uint8_t *) &sentData, sizeof(sentData));
   if (result == ESP_OK) {
-    //Serial.println("Sent with success");
+    Serial.println("Send ok");
   } else {
-    //Serial.println("Error sending the data");
+    Serial.println("Send fail");
   }
   delay(10);
 }

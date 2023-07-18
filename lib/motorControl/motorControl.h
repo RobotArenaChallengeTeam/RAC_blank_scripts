@@ -7,7 +7,12 @@ class MotorControl
 {
 public:
   MotorControl(uint16_t pin_A, uint16_t pin_B,int start_pwm = 0, int max_resolution = 512);
+  
+  // sets motor speed with 0 being brake
   void setSpeed(int speed);
+
+  // sets motor speed with 0 being free rolling
+  void setSpeedCoast(int speed);
   ~MotorControl();
 private:
   static uint16_t _free_pwm_unit;

@@ -80,3 +80,31 @@ void MotorControl::setSpeed(int speed) {
     mcpwm_set_duty(_pwm_unit, _pwm_timer, MCPWM_GEN_B, 100);
   }
 }
+
+void MotorControl::setSpeedCoast(int speed)
+{
+  int speed_abs = abs(speed);
+  int speed_sign = (speed > 0) - (speed < 0);
+  if (_start_pwm != 0)
+  {
+    speed_abs = map(speed_abs,0,_max_resolution,_start_pwm,_max_resolution);
+  }
+  float duty = (float) speed_abs;
+  duty= duty/(_max_resolution/100.0);
+  if (speed < 0)
+  {
+    mcpwm_set_duty(_pwm_unit, _pwm_timer, MCPWM_GEN_A, 0);
+    mcpwm_set_duty(_pwm_unit, _pwm_timer, MCPWM_GEN_B, duty);
+  }
+  else if (speed > 0)
+  {
+    mcpwm_set_duty(_pwm_unit, _pwm_timer, MCPWM_GEN_A, duty);
+    mcpwm_set_duty(_pwm_unit, _pwm_timer, MCPWM_GEN_B, 0);
+  }
+  else if (speed == 0)
+  {
+    mcpwm_set_duty(_pwm_unit, _pwm_timer, MCPWM_GEN_A, 0);
+    mcpwm_set_duty(_pwm_unit, _pwm_timer, MCPWM_GEN_B, 0);
+  }
+}
+

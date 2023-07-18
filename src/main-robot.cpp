@@ -15,11 +15,11 @@ static const char *TAG = "MAIN";
 //#define DEBUG_PRINTS
 
 
-#define MOTOR_A_IN1 8
-#define MOTOR_A_IN2 18
+#define MOTOR_A_IN1 16
+#define MOTOR_A_IN2 17
 
-#define MOTOR_B_IN1 16
-#define MOTOR_B_IN2 17
+#define MOTOR_B_IN1 8
+#define MOTOR_B_IN2 18
 
 #define MOTOR_C_IN1 4
 #define MOTOR_C_IN2 5
@@ -27,9 +27,9 @@ static const char *TAG = "MAIN";
 
 
 //RIGHT
-MotorControl motor1 = MotorControl(MOTOR_B_IN1, MOTOR_B_IN2); 
+MotorControl motor1 = MotorControl(MOTOR_A_IN1, MOTOR_A_IN2); 
 //LEFT
-MotorControl motor2 = MotorControl(MOTOR_A_IN1, MOTOR_A_IN2);
+MotorControl motor2 = MotorControl(MOTOR_B_IN1, MOTOR_B_IN2);
 //WPN
 MotorControl motor3 = MotorControl(MOTOR_C_IN1, MOTOR_C_IN2);
 
@@ -107,7 +107,9 @@ void setup()
   motor3.setSpeed(0);
   delay(500);
 
+  WiFi.enableLongRange(true);
   WiFi.mode(WIFI_STA);
+  esp_wifi_set_channel(ESPNOW_RAC_CHANNEL,WIFI_SECOND_CHAN_NONE);
   if (esp_wifi_set_mac(WIFI_IF_STA, &robotAddress[0]) != ESP_OK)
   {
     Serial.println("Error changing mac");
