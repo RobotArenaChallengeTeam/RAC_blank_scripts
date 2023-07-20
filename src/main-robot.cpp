@@ -64,16 +64,15 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
   failsafe = false;
 }
 
-int handle_blink(){
+int handle_blinks(){
   if(Battery.isLow()){
-    Led.setBlinks(1,1000);
+    Led.setBlinks(1,500,2.0);
     return 1;
   }
   if (failsafe){
     Led.setBlinks(2,500);
     return -1;
   }
-  Led.setBlinks(0);
   Led.ledOn();
   return 0;
 }
@@ -86,8 +85,7 @@ void setup()
 #endif
   analogReadResolution(10);
   Led.init();
-  delay(20);
-  Led.setBlinks(1,150);
+  Led.setBlinks(1,166);
   delay(2000);
   Battery.init();
   delay(20);
@@ -114,7 +112,6 @@ void setup()
     return;
   }
   esp_now_register_recv_cb(OnDataRecv);
-  Led.setBlinks(0);
   Led.ledOn();
 }
 
@@ -126,7 +123,7 @@ void loop()
   {
     failsafe = true;
   }
-  handle_blink();
+  handle_blinks();
   if (failsafe)
   {
     motor1.setSpeed(0);

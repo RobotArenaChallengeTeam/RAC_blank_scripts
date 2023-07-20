@@ -2,7 +2,7 @@
 #include "esp_log.h"
 uint8_t BatteryMonitor::_pin;
 bool BatteryMonitor::_low;
-
+float BatteryMonitor::_low_voltage_threshold = 6.8;
 
 BatteryMonitor::BatteryMonitor(int pin)
 {
@@ -20,6 +20,9 @@ bool BatteryMonitor::isLow(){
   return _low;
 }
 
+void BatteryMonitor::setVoltageThreshold(float threshold){
+  _low_voltage_threshold = threshold;
+}
 void BatteryMonitor::init()
 {
   pinMode(_pin, INPUT);
@@ -39,7 +42,7 @@ void BatteryMonitor::batteryMonitorTask(void *pvParameters)
   for (;;)
   {
     float batteryLevel = getVoltage();
-    if (batteryLevel < 6.8)
+    if (batteryLevel < _low_voltage_threshold)
     {
       _low = true;
     }

@@ -4,7 +4,9 @@
 
 /**
      * @brief create a led object to handle on, off and blinks
-     *        in a separate core task
+     * in a separate core task
+     * @attention 1. requires init() on setup to work
+     * @attention 2. led pin will be used as output
      * 
      * @param pin  pin the led is attached to, default 21
      */
