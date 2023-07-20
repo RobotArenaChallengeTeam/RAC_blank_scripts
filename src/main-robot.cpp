@@ -6,7 +6,7 @@
 #include <batteryMonitor.h>
 #include <ledUtility.h>
 #include "esp_log.h"
-#include "mac.h"
+#include "common.h"
 static const char *TAG = "MAIN";
 
 #define weapPot 7
@@ -37,14 +37,6 @@ BatteryMonitor Battery = BatteryMonitor();
 
 LedUtility Led = LedUtility();
 
-typedef struct {
-  int16_t speedmotorLeft;
-  int16_t speedmotorRight;
-  int16_t packetArg1;
-  int16_t packetArg2;
-  int16_t packetArg3;
-}
-packet_t;
 packet_t recData;
 
 

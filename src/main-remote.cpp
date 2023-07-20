@@ -69,8 +69,7 @@ void setup() {
   pinMode(leftBtnPin, INPUT_PULLUP);
   pinMode(topBtnPin, INPUT_PULLUP);
   Led.init();
-  Led.setBlinks(1,150);
-  delay(2000);
+  Led.setBlinks(1,166);
 #ifdef DEBUG_PRINTS
   Serial.begin(115200);
   Serial.println("RAC GENERIC BOT");
@@ -95,7 +94,6 @@ void setup() {
     return;
   }
   esp_now_register_recv_cb(OnDataRecv);
-  Led.setBlinks(0);
   Led.ledOn();
 }
 
@@ -115,7 +113,6 @@ void loop() {
   bool topBtnValue = !digitalRead(topBtnPin);
   
   // vvvv ----- YOUR AWESOME CODE HERE ----- vvvv //
-
 
 
   // -------------------------------------------- //
