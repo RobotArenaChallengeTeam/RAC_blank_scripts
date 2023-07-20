@@ -25,7 +25,6 @@ static const char *TAG = "MAIN";
 #define MOTOR_C_IN2 5
 
 
-
 //RIGHT
 MotorControl motor1 = MotorControl(MOTOR_A_IN1, MOTOR_A_IN2); 
 //LEFT

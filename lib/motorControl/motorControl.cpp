@@ -1,12 +1,11 @@
 #include "motorControl.h"
 uint16_t MotorControl::_free_pwm_unit=0;
 uint16_t MotorControl::_free_pwm_timer=0;
-uint16_t MotorControl::_pwm_freq=4000;
 
-MotorControl::MotorControl(uint16_t pin_A, uint16_t pin_B, int start_pwm, int max_resolution) {
+MotorControl::MotorControl(uint16_t pin_A, uint16_t pin_B,int start_speed,int pwm_freq,int max_resolution) {
   _pin_A = pin_A;
   _pin_B = pin_B;
-  _start_pwm = start_pwm;
+  _start_speed = start_speed;
   _max_resolution = max_resolution;
   if(_free_pwm_unit == 0){
     _pwm_unit = (mcpwm_unit_t)MCPWM_UNIT_0;
@@ -41,7 +40,7 @@ MotorControl::MotorControl(uint16_t pin_A, uint16_t pin_B, int start_pwm, int ma
 
   // Configura il PWM
   mcpwm_config_t pwm_config;
-  pwm_config.frequency = _pwm_freq;
+  pwm_config.frequency = pwm_freq;
   pwm_config.cmpr_a = 0;
   pwm_config.cmpr_b = 0;
   pwm_config.counter_mode = MCPWM_UP_COUNTER;
@@ -60,8 +59,8 @@ MotorControl::~MotorControl(){
 void MotorControl::setSpeed(int speed) {
   int speed_abs = abs(speed);
   int speed_sign =  (speed> 0) - (speed < 0);
-  if(_start_pwm != 0){
-    speed_abs = map(speed_abs,0,_max_resolution,_start_pwm,_max_resolution);
+  if(_start_speed != 0){
+    speed_abs = map(speed_abs,0,_max_resolution,_start_speed,_max_resolution);
   }
   float duty = (float) speed_abs;
   duty= duty/(_max_resolution/100.0);
@@ -85,9 +84,9 @@ void MotorControl::setSpeedCoast(int speed)
 {
   int speed_abs = abs(speed);
   int speed_sign = (speed > 0) - (speed < 0);
-  if (_start_pwm != 0)
+  if (_start_speed != 0)
   {
-    speed_abs = map(speed_abs,0,_max_resolution,_start_pwm,_max_resolution);
+    speed_abs = map(speed_abs,0,_max_resolution,_start_speed,_max_resolution);
   }
   float duty = (float) speed_abs;
   duty= duty/(_max_resolution/100.0);
