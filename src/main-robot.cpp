@@ -1,4 +1,11 @@
 #ifdef ROBOT
+#ifdef CORE_50
+#include "robot_v50.h"
+#endif
+#ifdef CORE_43
+#include "robot_v43.h"
+#endif
+
 #include <esp_now.h>
 #include "esp_wifi.h"
 #include <WiFi.h>
@@ -9,21 +16,8 @@
 #include "common.h"
 static const char *TAG = "MAIN";
 
-#define weapPot 7
-
 //------------ turn on generic serial printing
 //#define DEBUG_PRINTS
-
-
-#define MOTOR_A_IN1 16
-#define MOTOR_A_IN2 17
-
-#define MOTOR_B_IN1 8
-#define MOTOR_B_IN2 18
-
-#define MOTOR_C_IN1 4
-#define MOTOR_C_IN2 5
-
 
 //RIGHT
 MotorControl motor1 = MotorControl(MOTOR_A_IN1, MOTOR_A_IN2); 

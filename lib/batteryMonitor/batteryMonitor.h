@@ -6,11 +6,11 @@
      * @brief create a battery monitor object to handle battery voltage readings
      * in a separate core task
      * @attention 1. requires init() on setup to work
-     * @attention 2. must be stared with an analogread capable pin
+     * @attention 2. pin must have adc capabilites
      * @attention 3. to avoid polling the voltage is check only once each 2 seconds
      * @attention 4. the reading are calibrated with a voltage divider 47kohm and 27kohm
      * 
-     * @param pin  pin the voltage divider is attached to, default 21
+     * @param pin  pin the voltage divider is attached to, default 9
      */
 class BatteryMonitor {
   public:
@@ -23,7 +23,7 @@ class BatteryMonitor {
 
     /**
      * @brief set the voltage threshold, when a reading will be under this value 
-     * the battey will be considered at low voltage
+     * the battery will be considered at low voltage
      *
      * @param threshold the voltage in volts, default 6.8V
      */

@@ -1,4 +1,13 @@
 #ifdef REMOTE
+
+#ifdef CORE_50
+#include "remote_v50.h"
+#endif
+#ifdef CORE_43
+#include "remote_v43.h"
+#endif
+
+
 #include <math.h>
 #include <esp_now.h>
 #include "esp_wifi.h"
@@ -10,8 +19,6 @@
 
 static const char *TAG = "MAIN";
 //------------ turn on generic serial printing
-
-//#define DEBUG_PRINTS
 
 packet_t sentData;
 packet_t recData;
@@ -41,14 +48,6 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 
 
 //---------------------------------------HARDWARE DEPENDANT Variables
-//RAC standard remote
-const int stickXPotPin = 7;
-const int stickYPotPin = 10;
-const int leverPotPin = 8;
-
-const int rightBtnPin = 2;
-const int leftBtnPin = 4;
-const int topBtnPin = 5;
 LedUtility Led(21);
 
 //customisable vars
