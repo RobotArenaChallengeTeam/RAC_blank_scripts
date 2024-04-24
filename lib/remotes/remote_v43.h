@@ -1,4 +1,4 @@
-//RAC standard remote
+//old version
 const int stickXPotPin = 7;
 const int stickYPotPin = 10;
 const int leverPotPin = 8;

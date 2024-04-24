@@ -1,3 +1,4 @@
+//old version
 #define POT_PIN 7
 
 #define MOTOR_A_IN1 16
