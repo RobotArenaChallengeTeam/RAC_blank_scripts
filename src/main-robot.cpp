@@ -20,11 +20,11 @@ static const char *TAG = "MAIN";
 //#define DEBUG_PRINTS
 
 //RIGHT
-MotorControl motor1 = MotorControl(MOTOR_A_IN1, MOTOR_A_IN2); 
+MotorControl motor_right = MotorControl(MOTOR_A_IN1, MOTOR_A_IN2); 
 //LEFT
-MotorControl motor2 = MotorControl(MOTOR_B_IN1, MOTOR_B_IN2);
+MotorControl motor_left = MotorControl(MOTOR_B_IN1, MOTOR_B_IN2);
 //WPN
-MotorControl motor3 = MotorControl(MOTOR_C_IN1, MOTOR_C_IN2);
+MotorControl motor_weapon = MotorControl(MOTOR_C_IN1, MOTOR_C_IN2);
 
 BatteryMonitor Battery = BatteryMonitor();
 
@@ -85,9 +85,9 @@ void setup()
 
 
   analogSetAttenuation(ADC_11db);
-  motor1.setSpeed(0);
-  motor2.setSpeed(0);
-  motor3.setSpeed(0);
+  motor_right.setSpeed(0);
+  motor_left.setSpeed(0);
+  motor_weapon.setSpeed(0);
   delay(500);
 
   WiFi.enableLongRange(true);
@@ -119,9 +119,9 @@ void loop()
   handle_blinks();
   if (failsafe)
   {
-    motor1.setSpeed(0);
-    motor2.setSpeed(0);
-    motor3.setSpeed(0);
+    motor_right.setSpeed(0);
+    motor_left.setSpeed(0);
+    motor_weapon.setSpeed(0);
   }
   else
   {
