@@ -120,16 +120,14 @@ void loop() {
   if(l_btn_val == true){
     robot_data.motor_left = 512;
   }
-  
+  // -------------------------------------------- //
   Serial.print("R: ");
   Serial.print(robot_data.motor_right);
   Serial.print(" L: ");
   Serial.print(robot_data.motor_left);
   Serial.print(" A: ");
   Serial.print(robot_data.arm_position);
-  
 
-  // -------------------------------------------- //
   esp_err_t result = -1;
   result = esp_now_send(robotAddress, (uint8_t *) &robot_data, sizeof(robot_data));
   if (result == ESP_OK) {
