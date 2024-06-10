@@ -1,0 +1,122 @@
+#include <math.h>
+#include <esp_now.h>
+#include "esp_wifi.h"
+#include <WiFi.h>
+#include "esp_log.h"
+
+static const char *TAG = "MAIN";
+//------------ turn on generic serial printing
+#define ESPNOW_RAC_CHANNEL 1
+
+// note, the first number cannot be odd due to wssp mac limitation
+//possible first number can only end in  0,2,4,6,8,A,C,E, 
+//ex: 0x1A is valid, 0xF3 is invalid
+uint8_t robotAddress[] = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
+
+//PACKETS
+// remote -> robot
+typedef struct {
+  int16_t speedmotorLeft;
+  int16_t speedmotorRight;
+  int16_t packetArg1;
+  int16_t packetArg2;
+  int16_t packetArg3;
+} packet_t;
+
+packet_t sentData;
+packet_t recData;
+
+//---------------------------------------ESP_NOW Variables
+String success;
+esp_now_peer_info_t peerInfo;
+// Callback when data is sent
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+  if (status == 0) {
+    success = "Delivery Success :)";
+  }
+  else {
+    success = "Delivery Fail :(";
+  }
+}
+
+// Callback when data is received
+void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+  memcpy(&recData, incomingData, sizeof(recData));
+}
+
+
+
+
+//---------------------------------------HARDWARE DEPENDANT Variables
+//latest version
+#define right_left_pin 7
+#define forwd_backwd_pin 2
+#define lever_pin 6
+
+#define r_btn_pin 1
+#define l_btn_pin 4
+#define a_btn_pin 5
+
+//customisable vars
+int analogRes = 10;
+int analogReadMax = (1 << analogRes)-1;
+//variables for the sketch
+unsigned long current_time=0;
+void setup() {
+  analogReadResolution(analogRes);
+  analogSetAttenuation(ADC_11db);
+  pinMode(r_btn_pin, INPUT_PULLUP);
+  pinMode(l_btn_pin, INPUT_PULLUP);
+  pinMode(a_btn_pin, INPUT_PULLUP);
+#ifdef DEBUG_PRINTS
+  Serial.begin(115200);
+  Serial.println("RAC GENERIC BOT");
+#endif
+
+
+  //---------------------------------------ESP NOW setup
+  WiFi.enableLongRange(true);
+  WiFi.mode(WIFI_STA);
+  esp_wifi_set_channel(ESPNOW_RAC_CHANNEL,WIFI_SECOND_CHAN_NONE);
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
+  esp_now_register_send_cb(OnDataSent);
+  memcpy(peerInfo.peer_addr, robotAddress, 6);
+  peerInfo.channel = ESPNOW_RAC_CHANNEL;
+  peerInfo.ifidx = WIFI_IF_STA;
+  peerInfo.encrypt = false;
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+    Serial.println("Failed to add peer");
+    return;
+  }
+  esp_now_register_recv_cb(OnDataRecv);
+}
+
+void loop() {
+  //read pots values
+  int right_left_val = analogRead(right_left_pin);
+  delay(3);
+  int forwd_backwd_val = analogRead(forwd_backwd_pin);
+  delay(3);
+  int lever_val = analogRead(lever_pin);
+  delay(3);
+  current_time = millis(); 
+  bool r_btn_val = !digitalRead(r_btn_pin);
+  bool l_btn_val = !digitalRead(l_btn_pin);
+  bool a_btn_val = !digitalRead(a_btn_pin);
+  
+  // vvvv ----- YOUR AWESOME CODE HERE ----- vvvv //
+
+
+  // -------------------------------------------- //
+  esp_err_t result = -1;
+  result = esp_now_send(robotAddress, (uint8_t *) &sentData, sizeof(sentData));
+  if (result == ESP_OK) {
+    Serial.println("Send ok");
+  } else {
+    Serial.println("Send fail");
+  }
+  delay(10);
+}
