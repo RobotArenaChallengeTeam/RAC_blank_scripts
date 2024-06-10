@@ -11,19 +11,19 @@ static const char *TAG = "MAIN";
 // note, the first number cannot be odd due to wssp mac limitation
 //possible first number can only end in  0,2,4,6,8,A,C,E, 
 //ex: 0x1A is valid, 0xF3 is invalid
-uint8_t robotAddress[] = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
+uint8_t robotAddress[] = {0xF8, 0x9F, 0x00, 0x8F, 0x00, 0x70};
 
 //PACKETS
 // remote -> robot
 typedef struct {
-  int16_t speedmotorLeft;
-  int16_t speedmotorRight;
-  int16_t packetArg1;
-  int16_t packetArg2;
-  int16_t packetArg3;
+  int16_t motor_left;
+  int16_t motor_right;
+  int16_t arm_position;
+  int16_t arm_trigger;
+  int16_t bonus_value;
 } packet_t;
 
-packet_t sentData;
+packet_t robot_data;
 packet_t recData;
 
 //---------------------------------------ESP_NOW Variables
@@ -106,13 +106,25 @@ void loop() {
   bool r_btn_val = !digitalRead(r_btn_pin);
   bool l_btn_val = !digitalRead(l_btn_pin);
   bool a_btn_val = !digitalRead(a_btn_pin);
+  robot_data.motor_right = 0;
+  robot_data.motor_right = 0;
+  robot_data.arm_position = 0;
   
   // vvvv ----- YOUR AWESOME CODE HERE ----- vvvv //
-
+  if(r_btn_val == true){
+    robot_data.motor_right = 512;
+  }
+  if(l_btn_val == true){
+    robot_data.motor_left = 512;
+  }
+  if(a_btn_val == true){
+    robot_data.motor_right = -512;
+    robot_data.motor_left = -512;
+  }
 
   // -------------------------------------------- //
   esp_err_t result = -1;
-  result = esp_now_send(robotAddress, (uint8_t *) &sentData, sizeof(sentData));
+  result = esp_now_send(robotAddress, (uint8_t *) &robot_data, sizeof(robot_data));
   if (result == ESP_OK) {
     Serial.println("Send ok");
   } else {
