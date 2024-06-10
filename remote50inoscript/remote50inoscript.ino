@@ -6,7 +6,7 @@
 
 static const char *TAG = "MAIN";
 //------------ turn on generic serial printing
-#define ESPNOW_RAC_CHANNEL 1
+#define ESPNOW_RAC_CHANNEL 2
 
 // note, the first number cannot be odd due to wssp mac limitation
 //possible first number can only end in  0,2,4,6,8,A,C,E, 
@@ -50,10 +50,10 @@ void OnDataRecv(const esp_now_recv_info *mac, const uint8_t *incomingData, int l
 //---------------------------------------HARDWARE DEPENDANT Variables
 //latest version
 #define right_left_pin 7
-#define forwd_backwd_pin 2
-#define lever_pin 6
+#define forwd_backwd_pin 10
+#define lever_pin 8
 
-#define r_btn_pin 1
+#define r_btn_pin 2
 #define l_btn_pin 4
 #define a_btn_pin 5
 
@@ -68,10 +68,9 @@ void setup() {
   pinMode(r_btn_pin, INPUT_PULLUP);
   pinMode(l_btn_pin, INPUT_PULLUP);
   pinMode(a_btn_pin, INPUT_PULLUP);
-#ifdef DEBUG_PRINTS
   Serial.begin(115200);
   Serial.println("RAC GENERIC BOT");
-#endif
+
 
 
   //---------------------------------------ESP NOW setup
@@ -107,20 +106,28 @@ void loop() {
   bool l_btn_val = !digitalRead(l_btn_pin);
   bool a_btn_val = !digitalRead(a_btn_pin);
   robot_data.motor_right = 0;
-  robot_data.motor_right = 0;
+  robot_data.motor_left = 0;
   robot_data.arm_position = 0;
   
   // vvvv ----- YOUR AWESOME CODE HERE ----- vvvv //
+  if(a_btn_val == true){
+    robot_data.motor_right = -512;
+    robot_data.motor_left = -512;
+  }
   if(r_btn_val == true){
     robot_data.motor_right = 512;
   }
   if(l_btn_val == true){
     robot_data.motor_left = 512;
   }
-  if(a_btn_val == true){
-    robot_data.motor_right = -512;
-    robot_data.motor_left = -512;
-  }
+  
+  Serial.print("R: ");
+  Serial.print(robot_data.motor_right);
+  Serial.print(" L: ");
+  Serial.print(robot_data.motor_left);
+  Serial.print(" A: ");
+  Serial.print(robot_data.arm_position);
+  
 
   // -------------------------------------------- //
   esp_err_t result = -1;
