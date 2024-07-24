@@ -49,6 +49,17 @@ void OnDataRecv(const esp_now_recv_info *mac, const uint8_t *incomingData, int l
 
 //---------------------------------------HARDWARE DEPENDANT Variables
 //latest version
+#ifndef OLD_REMOTE
+#define right_left_pin 7
+#define forwd_backwd_pin 2
+#define lever_pin 6
+
+#define r_btn_pin 1
+#define l_btn_pin 4
+#define a_btn_pin 5
+#endif
+
+#ifdef OLD_REMOTE
 #define right_left_pin 7
 #define forwd_backwd_pin 10
 #define lever_pin 8
@@ -56,6 +67,7 @@ void OnDataRecv(const esp_now_recv_info *mac, const uint8_t *incomingData, int l
 #define r_btn_pin 2
 #define l_btn_pin 4
 #define a_btn_pin 5
+#endif
 
 //customisable vars
 int analogRes = 10;
@@ -90,7 +102,9 @@ void setup() {
     Serial.println("Failed to add peer");
     return;
   }
-  esp_now_register_recv_cb(OnDataRecv);
+  esp_now_register_recv_cb(OnDataRecv);\
+  pinMode(21, OUTPUT);
+  digitalWrite(21, HIGH);
 }
 
 void loop() {
