@@ -18,8 +18,8 @@ uint8_t robotAddress[] = {0xF8, 0x9F, 0x00, 0x8F, 0x00, 0x70};
 typedef struct {
   int16_t motor_left;
   int16_t motor_right;
-  int16_t arm_position;
   int16_t arm_trigger;
+  int16_t arm_position;
   int16_t bonus_value;
 } packet_t;
 
@@ -134,6 +134,7 @@ void loop() {
   if(l_btn_val == true){
     robot_data.motor_left = 512;
   }
+  robot_data.arm_position = forwd_backwd_val;
   // -------------------------------------------- //
   Serial.print("R: ");
   Serial.print(robot_data.motor_right);
